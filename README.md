@@ -13,8 +13,9 @@ User stories :<br>
 <br>as Student i want to see the Examinations (Date ,Time ,Duration,Room)
 <br>as Student i want to register to Examination with Matriculation Number
 <br>as Student i want to Delete my Self from the Examination
-<br>as Student i want to get the Grad of my Examination
-<br>as Student i want to get List of Grad of my Exams as PDF file
+<br>as Student i want to see the Grade of my Examination
+<br>as Student i want to get Notification per E-mail ,when the Grade applied 
+<br>as Student i want to get List of Grade of my Exams as PDF file
 ====================================================================
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 

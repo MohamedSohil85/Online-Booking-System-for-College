@@ -79,7 +79,7 @@ public class StudentService {
         String mat_numb = String.format("%d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
         mat_numb=mat_numb.substring(0,7);
         student.setMatriculationNumber(mat_numb);
-        mailer.send(Mail.withText(accountDto.getEmail(),"Your Username","your Username :"+student.getUserName()+" "+"your Matriculation Number :"+student.getMatriculationNumber()));
+        mailer.send(Mail.withText(accountDto.getEmail(),"Your Username/Matriculation Number","your Username :"+student.getUserName()+" "+"your Matriculation Number :"+student.getMatriculationNumber()));
 
         Address address=new Address();
         address.setCity(accountDto.getCity());

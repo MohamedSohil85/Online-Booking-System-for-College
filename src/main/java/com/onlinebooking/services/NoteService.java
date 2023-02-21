@@ -12,6 +12,8 @@ import com.onlinebooking.persistence.ExamRegistration;
 import com.onlinebooking.persistence.ExaminationRepository;
 import com.onlinebooking.persistence.NoteRepository;
 import com.onlinebooking.persistence.StudentRepository;
+import io.quarkus.mailer.Mail;
+import io.quarkus.mailer.Mailer;
 import io.quarkus.panache.common.Parameters;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -36,6 +38,8 @@ public class NoteService {
     ExaminationRepository examinationRepository;
     @Inject
     ExamRegistration examRegistration;
+    @Inject
+    Mailer mailer;
     NoteMapper noteMapper=new NoteMapper();
 
     @Transactional
@@ -67,7 +71,6 @@ public class NoteService {
                 note_.setExamination(examination.get());
                 note_.setStudent(student);
                 note_.persist();
-
                 return Response.status(Response.Status.CREATED).build();
             }
         }
@@ -173,7 +176,10 @@ return Response.status(Response.Status.OK).build();
 
     // retrieve all grade of student(Name,Matriculation Number)
 
-
+public List<NoteApply>getListOfGrade(String matNumber)throws ResourceNotFoundException{
+        List<Note>notes=studentRepository.findStudentByMatriculationNumber(matNumber).map(Student::getNotes).orElseThrow(()->new ResourceNotFoundException("Student with Matriculation Number :"+matNumber+" not found"));
+        return noteMapper.toDto(notes);
+}
 
 
 }
