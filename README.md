@@ -1,5 +1,21 @@
 # online-booking-system Project
 
+
+
+#User stories :
+#==============================================================
+as student i want to register to the app ,and get my Username and Matriculation Number per E-mail
+as student i want to log in to the app with Username and my Password
+as student i want to get list of Courses(Type of Course, Term, Begin ,End , Duration) ,which i want to select
+as student i want to see the Date of Courses and Time 
+as Student i want to select to Courses with my Matriculation Number
+as Student i want to delete my Self from Registration of this Course
+as Student i want to see the Examinations (Date ,Time ,Duration,Room) 
+as Student i want to register to Examination with Matriculation Number
+as Student i want to Delete my Self from the Examination
+as Student i want to get the Grad of my Examination
+as Student i want to get List of Grad of my Exams as PDF file
+#====================================================================
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
