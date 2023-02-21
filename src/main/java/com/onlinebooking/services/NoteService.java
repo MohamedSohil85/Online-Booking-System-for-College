@@ -8,6 +8,7 @@ import com.onlinebooking.dtos.NoteDto.NoteApply;
 import com.onlinebooking.entities.*;
 import com.onlinebooking.exceptions.ResourceNotFoundException;
 import com.onlinebooking.mapper.NoteMapper;
+import com.onlinebooking.persistence.ExamRegistration;
 import com.onlinebooking.persistence.ExaminationRepository;
 import com.onlinebooking.persistence.NoteRepository;
 import com.onlinebooking.persistence.StudentRepository;
@@ -33,6 +34,8 @@ public class NoteService {
     StudentRepository studentRepository;
     @Inject
     ExaminationRepository examinationRepository;
+    @Inject
+    ExamRegistration examRegistration;
     NoteMapper noteMapper=new NoteMapper();
 
     @Transactional
@@ -49,23 +52,31 @@ public class NoteService {
         Student student=optionalStudent.orElseThrow(()->new ResourceNotFoundException("no Resource with name :"+firstName+" " + lastName));
         Optional<Examination>examination=examinationRepository.findExaminationByName(examinationName);
         List<Note>notes=noteRepository.listAll();
-        for (Note note1:notes){
-            if (note1.getStudent().equals(student)&&note1.getExamination().equals(examination)){
+        for (Note note_:notes) {
+            if (note_.getStudent().equals(student) && note_.getExamination().equals(examination.get())) {
                 return Response.status(Response.Status.FOUND).build();
+            }
+        }
+        List<ExaminationRegistration>registrationList=examRegistration.listAll();
+        for (ExaminationRegistration registration:registrationList){
+            if ((registration.getStudent().equals(student) && registration.getExamination().equals(examination.get()))){
+                note.setAppliedDate(LocalDate.now());
+                note.setFirstName(firstName);
+                note.setLastName(lastName);
+                Note note_=noteMapper.toEntity(note);
+                note_.setExamination(examination.get());
+                note_.setStudent(student);
+                note_.persist();
+
+                return Response.status(Response.Status.CREATED).build();
             }
         }
 
 
 
-          note.setAppliedDate(LocalDate.now());
-          note.setFirstName(firstName);
-          note.setLastName(lastName);
-          Note note_=noteMapper.toEntity(note);
-          note_.setExamination(examination.get());
-          note_.setStudent(student);
-          note_.persist();
 
-                return Response.status(Response.Status.CREATED).build();
+return Response.status(Response.Status.OK).build();
+
 
             }
     // find list of Note  by Name of Student
@@ -161,6 +172,8 @@ public class NoteService {
     }
 
     // retrieve all grade of student(Name,Matriculation Number)
+
+
 
 
 }

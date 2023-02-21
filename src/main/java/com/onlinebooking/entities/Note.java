@@ -22,7 +22,6 @@ public class Note extends PanacheEntity  {
     private LocalDate appliedDate;
     private String mark;
     private String notice;
-    private String room;
     @ManyToOne
     private Examination examination;
     @ManyToOne
