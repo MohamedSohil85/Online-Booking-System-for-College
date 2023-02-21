@@ -47,5 +47,9 @@ public class NoteResource {
         return Response.ok(noteService.load(name),MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
                 "attachment; filename = students.pdf").build();
     }
-
+   @GET
+    @Path("/note-student/{matNumber}")
+    public List<NoteApply>fetchAllGradeOfStudentByMatNumber(@PathParam("matNumber")String matNumber) throws ResourceNotFoundException {
+        return noteService.getListOfGrade(matNumber);
+   }
 }
