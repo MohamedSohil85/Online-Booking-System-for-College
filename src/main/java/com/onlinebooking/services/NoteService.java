@@ -180,6 +180,129 @@ public List<NoteApply>getListOfGrade(String matNumber)throws ResourceNotFoundExc
         List<Note>notes=studentRepository.findStudentByMatriculationNumber(matNumber).map(Student::getNotes).orElseThrow(()->new ResourceNotFoundException("Student with Matriculation Number :"+matNumber+" not found"));
         return noteMapper.toDto(notes);
 }
+    public ByteArrayInputStream writeGradeOfStudentToPDF(String matNumber) throws ResourceNotFoundException, DocumentException {
+        List<Note>notes=studentRepository.findStudentByMatriculationNumber(matNumber).map(Student::getNotes).orElseThrow(()->new ResourceNotFoundException("Student not found"));
+        Student student=studentRepository.findStudentByMatriculationNumber(matNumber).get();
+        List<Registration>registrations=studentRepository.findStudentByMatriculationNumber(matNumber).map(Student::getRegistrations).orElseThrow(()->new ResourceNotFoundException("Resource not found"));
+        Document document=new Document();
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
+        PdfWriter.getInstance(document,out);
+        document.open();
+        Font font= FontFactory.getFont(FontFactory.COURIER,13, BaseColor.BLACK);
+        Paragraph paragraph=new Paragraph("Transcript of Records with all graduated courses",font);
+        paragraph.setAlignment(Element.ALIGN_CENTER);
+        document.add(paragraph);
+        document.add(Chunk.NEWLINE);
+
+        Paragraph paragraph1=new Paragraph("Name :"+student.getLastName()+"\n");
+        paragraph1.add("Firstname :"+student.getFirstName()+"\n");
+        paragraph1.add("Date of Birth :"+student.getDateOfBirth()+"\n");
+        paragraph1.add("Place of Birth :"+student.getAddress().getCity()+", "+student.getAddress().getCountry()+"\n");
+        paragraph1.add("Matriculation Number :"+student.getMatriculationNumber()+"\n");
+        paragraph1.setAlignment(Element.ALIGN_LEFT);
+        paragraph1.setFont(font);
+        paragraph1.add(Chunk.NEWLINE);
+        paragraph1.add(Chunk.NEWLINE);
+        document.add(paragraph1);
+
+        PdfPTable pdfPTable=new PdfPTable(4);
+        pdfPTable.setWidthPercentage(100);
+
+        Stream.of("Applied Date","Name of Exam","Grade","Notice").forEach(headerTitle->{
+            PdfPCell header = new PdfPCell();
+            Font headFont = FontFactory.
+                    getFont(FontFactory.HELVETICA_BOLD,10);
+            header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            header.setHorizontalAlignment(Element.ALIGN_CENTER);
+            header.setBorderWidth(2);
+            header.setPhrase(new Phrase(headerTitle, headFont));
+            pdfPTable.addCell(header);
+
+        });
+        for (Note note:notes){
+            PdfPCell dateCell=new PdfPCell(new Phrase(String.valueOf(note.getAppliedDate())));
+            dateCell.setVerticalAlignment(Element.ALIGN_CENTER);
+            dateCell.setPadding(4);
+            dateCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            pdfPTable.addCell(dateCell);
+
+            PdfPCell examName=new PdfPCell(new Phrase(note.getExamination().getExaminationName()));
+            examName.setVerticalAlignment(Element.ALIGN_CENTER);
+            examName.setHorizontalAlignment(Element.ALIGN_LEFT);
+            examName.setPadding(4);
+            pdfPTable.addCell(examName);
+
+            PdfPCell noteCell=new PdfPCell(new Phrase(note.getMark()));
+            noteCell.setPadding(4);
+            noteCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            noteCell.setVerticalAlignment(Element.ALIGN_CENTER);
+            pdfPTable.addCell(noteCell);
+
+            PdfPCell noticeCell=new PdfPCell(new Phrase(note.getNotice()));
+            noticeCell.setPadding(4);
+            noticeCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            noticeCell.setVerticalAlignment(Element.ALIGN_CENTER);
+            pdfPTable.addCell(noticeCell);
+
+        }
+        document.add(Chunk.NEWLINE);
+        PdfPTable pdfPTable1=new PdfPTable(5);
+        pdfPTable1.setWidthPercentage(100);
+
+        Stream.of("Applied Date","Name of Course","Type of Course","Language","Term").forEach(headerTitle-> {
+            PdfPCell header = new PdfPCell();
+            Font headFont = FontFactory.
+                    getFont(FontFactory.HELVETICA_BOLD, 10);
+            header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            header.setHorizontalAlignment(Element.ALIGN_CENTER);
+            header.setBorderWidth(2);
+            header.setPhrase(new Phrase(headerTitle, headFont));
+            pdfPTable1.addCell(header);
+        });
+        for (Registration registration:registrations){
+            PdfPCell dateCell=new PdfPCell(new Phrase(String.valueOf(registration.getDateOfRegistration())));
+            dateCell.setVerticalAlignment(Element.ALIGN_CENTER);
+            dateCell.setPadding(4);
+            dateCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            pdfPTable1.addCell(dateCell);
+
+            PdfPCell courseNameCell=new PdfPCell(new Phrase(registration.getCourse().getCourseName()));
+            courseNameCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            courseNameCell.setVerticalAlignment(Element.ALIGN_CENTER);
+            courseNameCell.setPadding(4);
+            pdfPTable1.addCell(courseNameCell);
+
+            PdfPCell courseTypeCell=new PdfPCell(new Phrase(String.valueOf(registration.getCourse().getTypeOfCourse())));
+            courseTypeCell.setVerticalAlignment(Element.ALIGN_CENTER);
+            courseTypeCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            courseTypeCell.setPadding(4);
+            pdfPTable1.addCell(courseTypeCell);
+
+            PdfPCell lang=new PdfPCell(new Phrase(registration.getCourse().getCourseLanguage()));
+            lang.setHorizontalAlignment(Element.ALIGN_LEFT);
+            lang.setVerticalAlignment(Element.ALIGN_CENTER);
+            lang.setPadding(4);
+            pdfPTable1.addCell(lang);
+
+            PdfPCell term=new PdfPCell(new Phrase(String.valueOf(registration.getCourse().getSemster())));
+            term.setVerticalAlignment(Element.ALIGN_CENTER);
+            term.setHorizontalAlignment(Element.ALIGN_LEFT);
+            term.setPadding(4);
+            pdfPTable1.addCell(term);
+
+        }
+
+        document.add(pdfPTable);
+        document.add(Chunk.NEWLINE);
+        document.add(pdfPTable1);
+        document.close();
+        return new ByteArrayInputStream(out.toByteArray());
+
+    }
+    public ByteArrayInputStream loadAllGradeOfStudent(String matNumber) throws DocumentException, ResourceNotFoundException {
+
+        return writeGradeOfStudentToPDF(matNumber);
+    }
 }

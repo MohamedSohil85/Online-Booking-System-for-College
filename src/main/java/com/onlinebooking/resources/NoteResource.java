@@ -52,4 +52,9 @@ public class NoteResource {
     public List<NoteApply>fetchAllGradeOfStudentByMatNumber(@PathParam("matNumber")String matNumber) throws ResourceNotFoundException {
         return noteService.getListOfGrade(matNumber);
    }
+   @GET
+    @Path("/export-Grade-Student/{matNumber}")
+    public Response convertToPDF(@PathParam("matNumber")String matNumber) throws DocumentException, ResourceNotFoundException {
+        return Response.ok(noteService.loadAllGradeOfStudent(matNumber),MediaType.APPLICATION_OCTET_STREAM).header("content-disposition","attachment; filename = Grade-student.pdf").build();
+   }
 }
