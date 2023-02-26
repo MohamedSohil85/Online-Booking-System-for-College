@@ -62,6 +62,8 @@ public class Users extends PanacheEntity {
     private String password;
     @OneToOne(mappedBy = "users",cascade = CascadeType.ALL)
     private Address address;
+    @ManyToOne
+    private Department department;
     @Roles
     private String role;
     @OneToMany(mappedBy = "student",cascade = CascadeType.ALL,orphanRemoval = true)

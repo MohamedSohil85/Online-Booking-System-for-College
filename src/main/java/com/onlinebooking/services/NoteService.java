@@ -71,6 +71,7 @@ public class NoteService {
                 note_.setExamination(examination.get());
                 note_.setStudent(student);
                 note_.persist();
+                mailer.send(Mail.withText(student.getEmail(),"Grade-Info","Grade of Exam entered"));
                 return Response.status(Response.Status.CREATED).build();
             }
         }
@@ -180,6 +181,10 @@ public List<NoteApply>getListOfGrade(String matNumber)throws ResourceNotFoundExc
         List<Note>notes=studentRepository.findStudentByMatriculationNumber(matNumber).map(Student::getNotes).orElseThrow(()->new ResourceNotFoundException("Student with Matriculation Number :"+matNumber+" not found"));
         return noteMapper.toDto(notes);
 }
+
+// change Grade
+
+    //
     public ByteArrayInputStream writeGradeOfStudentToPDF(String matNumber) throws ResourceNotFoundException, DocumentException {
         List<Note>notes=studentRepository.findStudentByMatriculationNumber(matNumber).map(Student::getNotes).orElseThrow(()->new ResourceNotFoundException("Student not found"));
         Student student=studentRepository.findStudentByMatriculationNumber(matNumber).get();

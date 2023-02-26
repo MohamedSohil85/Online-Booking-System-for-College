@@ -6,12 +6,14 @@ import com.itextpdf.text.pdf.*;
 import com.onlinebooking.dtos.StudentDto.AccountDto;
 import com.onlinebooking.dtos.StudentDto.StudentDto;
 import com.onlinebooking.entities.Address;
+import com.onlinebooking.entities.Department;
 import com.onlinebooking.entities.Student;
 
 import com.onlinebooking.exceptions.ResourceNotFoundException;
 import com.onlinebooking.mapper.StudentInfoMapper;
 import com.onlinebooking.mapper.StudentMapper;
 import com.onlinebooking.persistence.AddressRepository;
+import com.onlinebooking.persistence.DepartmentRepository;
 import com.onlinebooking.persistence.StudentRepository;
 
 import io.quarkus.elytron.security.common.BcryptUtil;
@@ -43,7 +45,8 @@ public class StudentService {
     AddressRepository addressRepository;
     @Inject
     StudentRepository studentRepository;
-
+    @Inject
+    DepartmentRepository departmentRepository;
     StudentMapper studentMapper=new StudentMapper();
     StudentInfoMapper studentInfoMapper =new StudentInfoMapper();
     @Inject
@@ -60,7 +63,10 @@ public class StudentService {
                     return Response.status(Response.Status.FOUND).build();
                 }
         }
-        String pwd= accountDto.getPassword();
+
+        String pwd= UUID.randomUUID().toString();
+        pwd=pwd.replaceAll("-","");
+        pwd=pwd.substring(0,5);
         String encode_pwd=BcryptUtil.bcryptHash(pwd);
         Student student=studentMapper.toEntity(accountDto);
         student.setPassword(encode_pwd);
@@ -79,8 +85,10 @@ public class StudentService {
         String mat_numb = String.format("%d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
         mat_numb=mat_numb.substring(0,7);
         student.setMatriculationNumber(mat_numb);
-        mailer.send(Mail.withText(accountDto.getEmail(),"Your Username/Matriculation Number","your Username :"+student.getUserName()+" "+"your Matriculation Number :"+student.getMatriculationNumber()));
-
+        mailer.send(Mail.withText(accountDto.getEmail(),"Your Username/Matriculation Number","your Username :"+student.getUserName()+" "+"\nyour Matriculation Number :"+student.getMatriculationNumber()+"\nyour Password :"+pwd+"\nNotice : you can change your Password "));
+        Optional<Department> department=departmentRepository.findDepartmentByName(accountDto.getDepartmentName());
+        Department department_=department.get();
+        student.setDepartment(department_);
         Address address=new Address();
         address.setCity(accountDto.getCity());
         address.setCountry(accountDto.getCountry());

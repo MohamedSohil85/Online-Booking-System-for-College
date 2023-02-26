@@ -50,4 +50,5 @@ public class AccountDto{
     private Date dateOfRegistration;
     private String userName;
     private String password;
+    private String departmentName;
 }

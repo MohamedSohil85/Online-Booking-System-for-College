@@ -22,5 +22,7 @@ public class Department extends PanacheEntity {
     @OneToMany(mappedBy = "department",cascade = CascadeType.ALL)
     private List<Course>courses;
     private String departmentLocation;
+    @OneToMany(mappedBy = "department",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Users>usersList;
 
 }
