@@ -2,6 +2,7 @@ package com.onlinebooking.resources;
 
 import com.itextpdf.text.DocumentException;
 import com.onlinebooking.dtos.NoteDto.NoteApply;
+import com.onlinebooking.entities.Note;
 import com.onlinebooking.entities.Student;
 import com.onlinebooking.exceptions.ResourceNotFoundException;
 import com.onlinebooking.services.NoteService;
@@ -56,5 +57,10 @@ public class NoteResource {
     @Path("/export-Grade-Student/{matNumber}")
     public Response convertToPDF(@PathParam("matNumber")String matNumber) throws DocumentException, ResourceNotFoundException {
         return Response.ok(noteService.loadAllGradeOfStudent(matNumber),MediaType.APPLICATION_OCTET_STREAM).header("content-disposition","attachment; filename = Grade-student.pdf").build();
+   }
+   @PUT
+    @Path("/change-Grade/{id}/matriculNumber/{matNumber}")
+    public Response changeGrade(@PathParam("id")Long id, @PathParam("matNumber")String matNumber, Note note){
+        return noteService.changeGradeOfStudent(matNumber,id,note);
    }
 }

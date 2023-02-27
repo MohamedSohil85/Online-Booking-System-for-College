@@ -196,7 +196,7 @@ public List<NoteApply>getListOfGrade(String matNumber)throws ResourceNotFoundExc
         PdfWriter.getInstance(document,out);
         document.open();
         Font font= FontFactory.getFont(FontFactory.COURIER,13, BaseColor.BLACK);
-        Paragraph paragraph=new Paragraph("Transcript of Records with all graduated courses",font);
+        Paragraph paragraph=new Paragraph("Transcript of Records with all graduated Courses",font);
         paragraph.setAlignment(Element.ALIGN_CENTER);
         document.add(paragraph);
         document.add(Chunk.NEWLINE);
@@ -320,8 +320,9 @@ public List<NoteApply>getListOfGrade(String matNumber)throws ResourceNotFoundExc
        Note note_=note.get();
        note_.setMark(newGrade.getMark());
        note_.setAppliedDate(LocalDate.now());
-
        note_.persist();
+       Student student=optionalStudent.get();
+       mailer.send(Mail.withText(student.getEmail(),"Grade-Info","Grade has been changed !"));
        return Response.status(Response.Status.OK).build();
 
     }
