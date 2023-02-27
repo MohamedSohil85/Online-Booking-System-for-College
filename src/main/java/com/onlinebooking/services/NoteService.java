@@ -311,4 +311,18 @@ public List<NoteApply>getListOfGrade(String matNumber)throws ResourceNotFoundExc
 
         return writeGradeOfStudentToPDF(matNumber);
     }
+    public  Response changeGradeOfStudent(String matNumber,Long noteId,Note newGrade){
+       Optional<Student>optionalStudent=studentRepository.findStudentByMatriculationNumber(matNumber);
+       if (!optionalStudent.isPresent()){
+           Response.status(Response.Status.NOT_FOUND).build();
+       }
+       Optional<Note>note=noteRepository.findByIdOptional(noteId);
+       Note note_=note.get();
+       note_.setMark(newGrade.getMark());
+       note_.setAppliedDate(LocalDate.now());
+
+       note_.persist();
+       return Response.status(Response.Status.OK).build();
+
+    }
 }
