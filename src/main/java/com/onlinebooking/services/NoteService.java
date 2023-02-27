@@ -206,6 +206,7 @@ public List<NoteApply>getListOfGrade(String matNumber)throws ResourceNotFoundExc
         paragraph1.add("Date of Birth :"+student.getDateOfBirth()+"\n");
         paragraph1.add("Place of Birth :"+student.getAddress().getCity()+", "+student.getAddress().getCountry()+"\n");
         paragraph1.add("Matriculation Number :"+student.getMatriculationNumber()+"\n");
+        paragraph1.add("Department :"+student.getDepartment());
         paragraph1.setAlignment(Element.ALIGN_LEFT);
         paragraph1.setFont(font);
         paragraph1.add(Chunk.NEWLINE);
